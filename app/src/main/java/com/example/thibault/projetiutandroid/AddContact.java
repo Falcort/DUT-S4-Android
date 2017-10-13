@@ -9,7 +9,10 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-public class AddContact extends AppCompatActivity
+import java.io.Serializable;
+import java.util.ArrayList;
+
+public class AddContact extends AppCompatActivity implements Serializable
 {
 
     @Override
@@ -69,6 +72,14 @@ public class AddContact extends AppCompatActivity
             CharSequence text = "Nom : " + name.getText() + "\nEmail : " + email.getText() + "\nPhone : " + phone.getText() + "\nSexe : " + sexe;
             Toast toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
             toast.show();
+
+            String newContact = name.getText() + ";" + email.getText() + ";" + phone.getText() + ";" + sexe;
+            ArrayList<String> contact = getIntent().getStringArrayListExtra("listContact");
+            contact.add(newContact);
+
+            Intent intent = new Intent(AddContact.this, MainActivity.class);
+            intent.putExtra("listContact", contact);
+            startActivity(intent);
         }
     }
 }
