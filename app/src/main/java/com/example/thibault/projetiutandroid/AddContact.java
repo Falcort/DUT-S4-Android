@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioGroup;
@@ -46,11 +47,13 @@ public class AddContact extends AppCompatActivity implements Serializable
         if(email.length() <= 0)
         {
             email.setError("Requis");
+            valide++;
         }
 
         if (phone.length() <= 0)
         {
             phone.setError("Requis");
+            valide++;
         }
 
         if(indexRadio == 1)
@@ -65,21 +68,27 @@ public class AddContact extends AppCompatActivity implements Serializable
         {
             Toast toast = Toast.makeText(context, "Sex requis", Toast.LENGTH_SHORT);
             toast.show();
+            valide++;
         }
 
         if(valide == 0)
         {
-            CharSequence text = "Nom : " + name.getText() + "\nEmail : " + email.getText() + "\nPhone : " + phone.getText() + "\nSexe : " + sexe;
-            Toast toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
-            toast.show();
-
             String newContact = name.getText() + ";" + email.getText() + ";" + phone.getText() + ";" + sexe;
+            Log.d("STATE", "\n\n\n" + "ICI" + "\n\n\n");
             ArrayList<String> contact = getIntent().getStringArrayListExtra("listContact");
+            Log.d("STATE", "\n\n\n" + "ICI" + "\n\n\n");
+            Log.d("STATE", "\n\n\n" + contact.size() + "\n\n\n");
+            for(String test : contact)
+            {
+                Log.d("STATE", "\n\n\n" + test + "\n\n\n");
+            }
+
             contact.add(newContact);
 
             Intent intent = new Intent(AddContact.this, MainActivity.class);
             intent.putExtra("listContact", contact);
             startActivity(intent);
+            finish();
         }
     }
 }
