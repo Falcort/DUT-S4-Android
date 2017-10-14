@@ -1,7 +1,9 @@
 package com.example.thibault.projetiutandroid;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,6 +25,8 @@ public class MainActivity extends AppCompatActivity implements Serializable
 
     ListView listView;
 
+    SimpleAdapter adapter;
+    int index;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -52,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements Serializable
         }
 
         listView = (ListView) findViewById(R.id.listViewContact);
-        SimpleAdapter adapter = new SimpleAdapter(this.getBaseContext(), ArrayMap, R.layout.list_view_contact_layout, new String[] {"name", "phone", "email", "sexe"}, new int[] {R.id.titre});
+        adapter = new SimpleAdapter(this.getBaseContext(), ArrayMap, R.layout.list_view_contact_layout, new String[] {"name", "phone", "email", "sexe"}, new int[] {R.id.titre});
         listView.setAdapter(adapter);
         listView.setClickable(true);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
@@ -66,6 +70,17 @@ public class MainActivity extends AppCompatActivity implements Serializable
 
                 Toast toast = Toast.makeText(context, text, duration);
                 toast.show();
+            }
+        });
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
+        {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l)
+            {
+                ArrayMap.remove(i);
+                adapter.notifyDataSetChanged();
+                return true;
             }
         });
     }
