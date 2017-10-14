@@ -136,8 +136,11 @@ public class AddContact extends AppCompatActivity implements Serializable
             {
                 if(resultCode == RESULT_OK)
                 {
-                    Uri selectedImage = imageReturnedIntent.getData();
-                    imageview.setImageURI(selectedImage);
+                    /*
+                     Buggé
+                      */
+                    //Uri selectedImage = imageReturnedIntent.getData();
+                    //imageview.setImageURI(selectedImage);
                 }
                 break;
             }
@@ -145,8 +148,11 @@ public class AddContact extends AppCompatActivity implements Serializable
                 {
                 if(resultCode == RESULT_OK)
                 {
-                    Uri selectedImage = imageReturnedIntent.getData();
-                    imageview.setImageURI(selectedImage);
+                    /*
+                     Buggé
+                      */
+                    //Uri selectedImage = imageReturnedIntent.getData();
+                    //imageview.setImageURI(selectedImage);
                 }
                 break;
             }
