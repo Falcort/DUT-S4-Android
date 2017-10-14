@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements Serializable
         if(getIntent().getSerializableExtra("listContact") != null)
         {
             listString = getIntent().getStringArrayListExtra("listContact");
-            Log.d("STATE", "\nTaille de la listString MLain : \n" + listString.size());
             for (String contact : listString)
             {
                 Log.d("STATE", "\nAjout\n");
@@ -64,12 +63,12 @@ public class MainActivity extends AppCompatActivity implements Serializable
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                Context context = getApplicationContext();
-                CharSequence text = ArrayMap.get(position).get("phone") + "\n" + ArrayMap.get(position).get("email") + "\n" + ArrayMap.get(position).get("sexe");
-                int duration = Toast.LENGTH_LONG;
-
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
+                Intent intent = new Intent(MainActivity.this, MoreInfo.class);
+                intent.putExtra("name", ArrayMap.get(position).get("name"));
+                intent.putExtra("phone", ArrayMap.get(position).get("phone"));
+                intent.putExtra("email", ArrayMap.get(position).get("email"));
+                intent.putExtra("sexe", ArrayMap.get(position).get("sexe"));
+                startActivity(intent);
             }
         });
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
@@ -111,6 +110,5 @@ public class MainActivity extends AppCompatActivity implements Serializable
         Intent intent = new Intent(MainActivity.this, AddContact.class);
         intent.putExtra("listContact", listString);
         startActivity(intent);
-        finish();
     }
 }
