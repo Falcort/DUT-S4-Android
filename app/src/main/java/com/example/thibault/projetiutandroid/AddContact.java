@@ -1,9 +1,13 @@
 package com.example.thibault.projetiutandroid;
 
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -11,16 +15,25 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageSwitcher;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class AddContact extends AppCompatActivity implements Serializable
 {
-    ImageSwitcher imageview;
+
+    private static final int GALLERY = 1;
+    private static final int CAMERA = 2;
+
+    private String imageURI = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -79,15 +92,8 @@ public class AddContact extends AppCompatActivity implements Serializable
 
         if(valide == 0)
         {
-            String newContact = name.getText() + ";" + email.getText() + ";" + phone.getText() + ";" + sexe;
-            Log.d("STATE", "\n\n\n" + "ICI" + "\n\n\n");
+            String newContact = name.getText() + ";" + email.getText() + ";" + phone.getText() + ";" + sexe + ";"  + imageURI;
             ArrayList<String> contact = getIntent().getStringArrayListExtra("listContact");
-            Log.d("STATE", "\n\n\n" + "ICI" + "\n\n\n");
-            Log.d("STATE", "\n\n\n" + contact.size() + "\n\n\n");
-            for(String test : contact)
-            {
-                Log.d("STATE", "\n\n\n" + test + "\n\n\n");
-            }
 
             contact.add(newContact);
 
@@ -110,13 +116,11 @@ public class AddContact extends AppCompatActivity implements Serializable
             {
                 if(i == 0)
                 {
-                    Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    startActivityForResult(takePicture, 0);
+                    takePhotoFromCamera();
                 }
                 else if(i == 1)
                 {
-                    Intent pickPhoto = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    startActivityForResult(pickPhoto , 1);
+                    choosePhotoFromGallary();
                 }
                 else
                 {
@@ -127,35 +131,79 @@ public class AddContact extends AppCompatActivity implements Serializable
         builder.show();
     }
 
-    protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent)
+    private void choosePhotoFromGallary()
     {
-        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
-        switch(requestCode)
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+        startActivityForResult(galleryIntent, GALLERY);
+    }
+
+    private void takePhotoFromCamera()
+    {
+        Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intent, CAMERA);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == this.RESULT_CANCELED)
         {
-            case 0:
+            return;
+        }
+        if (requestCode == GALLERY)
+        {
+            if (data != null)
             {
-                if(resultCode == RESULT_OK)
+                Uri contentURI = data.getData();
+                try
                 {
-                    /*
-                     Buggé
-                      */
-                    //Uri selectedImage = imageReturnedIntent.getData();
-                    //imageview.setImageURI(selectedImage);
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
+                    imageURI = saveImage(bitmap);
+                    Log.d("STATE", "IMAGE URI : " + imageURI);
+
                 }
-                break;
-            }
-            case 1:
+                catch (IOException e)
                 {
-                if(resultCode == RESULT_OK)
-                {
-                    /*
-                     Buggé
-                      */
-                    //Uri selectedImage = imageReturnedIntent.getData();
-                    //imageview.setImageURI(selectedImage);
+                    e.printStackTrace();
                 }
-                break;
             }
+
+        }
+        else if (requestCode == CAMERA)
+        {
+            Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
+            imageURI =  saveImage(thumbnail);
+            Log.d("STATE", "IMAGE URI : " + imageURI);
+            Toast.makeText(AddContact.this, "Image Saved!", Toast.LENGTH_SHORT).show();
         }
     }
+
+    public String saveImage(Bitmap myBitmap)
+    {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        myBitmap.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
+        File wallpaperDirectory = new File(Environment.getExternalStorageDirectory() + "/IUT-Android/");
+        if (!wallpaperDirectory.exists())
+        {
+            wallpaperDirectory.mkdirs();
+        }
+        try
+        {
+            File f = new File(wallpaperDirectory, Calendar.getInstance().getTimeInMillis() + ".jpg");
+            f.createNewFile();
+            FileOutputStream fo = new FileOutputStream(f);
+            fo.write(bytes.toByteArray());
+            MediaScannerConnection.scanFile(this, new String[]{f.getPath()}, new String[]{"image/jpeg"}, null);
+            fo.close();
+            return f.getAbsolutePath();
+        }
+        catch (IOException e1)
+        {
+            e1.printStackTrace();
+        }
+        return "";
+    }
+
 }

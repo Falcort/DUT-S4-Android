@@ -38,13 +38,17 @@ public class MainActivity extends AppCompatActivity implements Serializable
             listString = getIntent().getStringArrayListExtra("listContact");
             for (String contact : listString)
             {
-                Log.d("STATE", "\nAjout\n");
+                Log.d("STATE", contact);
                 String split[] = contact.split(";");
                 Hashmap = new HashMap<>();
                 Hashmap.put("name", split[0]);
                 Hashmap.put("email", split[1]);
                 Hashmap.put("phone", split[2]);
                 Hashmap.put("sexe", split[3]);
+                if(split.length > 4)
+                {
+                    Hashmap.put("uri", split[4]);
+                }
                 ArrayMap.add(Hashmap);
             }
         }
@@ -54,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements Serializable
         }
 
         listView = (ListView) findViewById(R.id.listViewContact);
-        adapter = new SimpleAdapter(this.getBaseContext(), ArrayMap, R.layout.list_view_contact_layout, new String[] {"name", "phone", "email", "sexe"}, new int[] {R.id.titre});
+        adapter = new SimpleAdapter(this.getBaseContext(), ArrayMap, R.layout.list_view_contact_layout, new String[] {"name", "uri", "phone", "email", "sexe"}, new int[] {R.id.titre, R.id.img});
         listView.setAdapter(adapter);
 
         listView.setClickable(true);
@@ -68,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements Serializable
                 intent.putExtra("phone", ArrayMap.get(position).get("phone"));
                 intent.putExtra("email", ArrayMap.get(position).get("email"));
                 intent.putExtra("sexe", ArrayMap.get(position).get("sexe"));
+                intent.putExtra("uri", ArrayMap.get(position).get("uri"));
                 startActivity(intent);
             }
         });
@@ -87,14 +92,12 @@ public class MainActivity extends AppCompatActivity implements Serializable
                     {
                         if(items[item].equals("Supprimer contact"))
                         {
-                            Log.d("STATE", "\nSuppresion\n");
                             listString.remove(index);
                             ArrayMap.remove(index);
                             adapter.notifyDataSetChanged();
                         }
                         else
                         {
-                            Log.d("STATE", "\nAnnulation\n");
                             dialogInterface.dismiss();
                         }
                     }
