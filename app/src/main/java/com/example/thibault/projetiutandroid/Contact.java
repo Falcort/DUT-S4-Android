@@ -15,7 +15,7 @@ public class Contact implements Serializable
         this.name = name;
         this.email = email;
         this.phone = phone;
-        this.sexe = phone;
+        this.sexe = sexe;
         this.img = img;
     }
 

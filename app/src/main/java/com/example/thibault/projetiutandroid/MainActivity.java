@@ -1,7 +1,9 @@
 package com.example.thibault.projetiutandroid;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Environment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,6 +13,12 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,9 +28,10 @@ public class MainActivity extends AppCompatActivity implements Serializable
     ArrayList<String> listString;
     ArrayList<HashMap<String, String>> ArrayMap = new ArrayList<>();
     HashMap<String, String> Hashmap;
-
+    String fileName = Environment.getExternalStorageDirectory() + File.separator + "IUT-Android" + File.separator + "saveContactIUTAndroid.txt";
     ListView listView;
 
+    ArrayList<Contact> ContactList = new ArrayList<>();
     SimpleAdapter adapter;
 
     @Override
@@ -30,6 +39,46 @@ public class MainActivity extends AppCompatActivity implements Serializable
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Context context = getApplicationContext();
+        try
+        {
+            File file = new File(fileName);
+            if(!file.exists())
+            {
+                file.createNewFile();
+            }
+            FileInputStream FileInputSteam = new FileInputStream(file);
+            ObjectInputStream ObjectInputStream = new ObjectInputStream(FileInputSteam);
+            ContactList = (ArrayList<Contact>) ObjectInputStream.readObject();
+            ObjectInputStream.close();
+            FileInputSteam.close();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        catch (ClassNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        Log.d("STATE", "Size : " + ContactList.size());
+        for (Contact contact : ContactList)
+        {
+            Hashmap = new HashMap<>();
+            Hashmap.put("name", contact.getName());
+            Hashmap.put("email", contact.getEmail());
+            Hashmap.put("phone", contact.getPhone());
+            Hashmap.put("sexe", contact.getSexe());
+            Hashmap.put("img", contact.getImg());
+            ArrayMap.add(Hashmap);
+        }
+
+
+
+        /*
+
+        Commentaire pour Serialization
 
         if(getIntent().getSerializableExtra("listContact") != null)
         {
@@ -53,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements Serializable
         else
         {
             listString = new ArrayList<>();
-        }
+        }*/
 
         listView = (ListView) findViewById(R.id.listViewContact);
         adapter = new SimpleAdapter(this.getBaseContext(), ArrayMap, R.layout.list_view_contact_layout, new String[] {"name", "uri", "phone", "email", "sexe"}, new int[] {R.id.titre, R.id.img});
@@ -90,9 +139,24 @@ public class MainActivity extends AppCompatActivity implements Serializable
                     {
                         if(item == 0)
                         {
-                            listString.remove(index);
-                            ArrayMap.remove(index);
+                            try
+                            {
+                                Log.d("STATE", "AJOUTER");
+                                File file = new File(fileName);
+                                ArrayMap.remove(index);
+                                ContactList.remove(index);
+                                FileOutputStream fos = new FileOutputStream(file, false);
+                                ObjectOutputStream os = new ObjectOutputStream(fos);
+                                os.writeObject(ContactList);
+                                os.close();
+                                fos.close();
+                            }
+                            catch (Exception e)
+                            {
+                                e.printStackTrace();
+                            }
                             adapter.notifyDataSetChanged();
+
                         }
                         else if(item == 1)
                         {
