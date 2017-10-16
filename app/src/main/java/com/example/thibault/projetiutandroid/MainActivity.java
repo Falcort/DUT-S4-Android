@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements Serializable
             Hashmap.put("phone", contact.getPhone());
             Hashmap.put("sexe", contact.getSexe());
             Hashmap.put("img", contact.getImg());
+            Log.d("STATE", "IMAGE DANS LE FOR : " + contact.getImg());
             ArrayMap.add(Hashmap);
         }
 
@@ -105,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements Serializable
         }*/
 
         listView = (ListView) findViewById(R.id.listViewContact);
-        adapter = new SimpleAdapter(this.getBaseContext(), ArrayMap, R.layout.list_view_contact_layout, new String[] {"name", "uri", "phone", "email", "sexe"}, new int[] {R.id.titre, R.id.img});
+        adapter = new SimpleAdapter(this.getBaseContext(), ArrayMap, R.layout.list_view_contact_layout, new String[] {"name", "img", "phone", "email", "sexe"}, new int[] {R.id.titre, R.id.img});
         listView.setAdapter(adapter);
 
         listView.setClickable(true);
@@ -119,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements Serializable
                 intent.putExtra("phone", ArrayMap.get(position).get("phone"));
                 intent.putExtra("email", ArrayMap.get(position).get("email"));
                 intent.putExtra("sexe", ArrayMap.get(position).get("sexe"));
-                intent.putExtra("uri", ArrayMap.get(position).get("uri"));
+                intent.putExtra("uri", ArrayMap.get(position).get("img"));
                 startActivity(intent);
             }
         });

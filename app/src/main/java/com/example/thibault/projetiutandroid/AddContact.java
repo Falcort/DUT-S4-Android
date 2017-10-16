@@ -116,6 +116,7 @@ public class AddContact extends AppCompatActivity implements Serializable
                 Log.d("STATE", "AJOUTER");
                 File file = new File(fileName);
                 Contact contact = new Contact(name.getText().toString(), email.getText().toString(), phone.getText().toString(), sexe, imageURI);
+                Log.d("STATE", "IMAGE URI DANS ADD CONTACT : " + imageURI);
                 ContactList.add(contact);
                 FileOutputStream fos = new FileOutputStream(file, false);
                 ObjectOutputStream os = new ObjectOutputStream(fos);
