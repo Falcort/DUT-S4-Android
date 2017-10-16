@@ -1,6 +1,5 @@
 package com.example.thibault.projetiutandroid;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AlertDialog;
@@ -11,7 +10,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.Toast;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -82,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements Serializable
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l)
             {
                 final int index = i;
-                final CharSequence[] items = {"Supprimer contact", "Annulé"};
+                final CharSequence[] items = {"Supprimer contact", "Envoyé un SMS", "Annulé"};
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setTitle("Suppresion contact");
                 builder.setItems(items, new DialogInterface.OnClickListener()
@@ -90,11 +88,17 @@ public class MainActivity extends AppCompatActivity implements Serializable
                     @Override
                     public void onClick(DialogInterface dialogInterface, int item)
                     {
-                        if(items[item].equals("Supprimer contact"))
+                        if(item == 0)
                         {
                             listString.remove(index);
                             ArrayMap.remove(index);
                             adapter.notifyDataSetChanged();
+                        }
+                        else if(item == 1)
+                        {
+                            Intent intent = new Intent(MainActivity.this, SendSMS.class);
+                            intent.putExtra("phone", ArrayMap.get(index).get("phone"));
+                            startActivity(intent);
                         }
                         else
                         {
