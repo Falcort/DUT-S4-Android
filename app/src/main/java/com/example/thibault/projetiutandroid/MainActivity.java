@@ -130,9 +130,9 @@ public class MainActivity extends AppCompatActivity implements Serializable
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l)
             {
                 final int index = i;
-                final CharSequence[] items = {"Supprimer contact", "Envoyé un SMS", "Annulé"};
+                final CharSequence[] items = {"Supprimer contact", "Envoyer un SMS", "Annuler"};
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("Suppresion contact");
+                builder.setTitle("Suppression contact");
                 builder.setItems(items, new DialogInterface.OnClickListener()
                 {
                     @Override

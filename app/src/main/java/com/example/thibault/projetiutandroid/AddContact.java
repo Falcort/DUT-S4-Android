@@ -88,7 +88,7 @@ public class AddContact extends AppCompatActivity implements Serializable
         }
         else
         {
-            Toast toast = Toast.makeText(context, "Sex requis", Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(context, "Sexe requis", Toast.LENGTH_SHORT);
             toast.show();
             valide++;
         }
@@ -150,7 +150,7 @@ public class AddContact extends AppCompatActivity implements Serializable
 
     public void onAddPhoto(View view)
     {
-        final CharSequence[] items = {"Prendre une photo", "Chosiir depuis la gallerie", "Annulée"};
+        final CharSequence[] items = {"Prendre une photo", "Choisir depuis la galerie", "Annuler"};
         AlertDialog.Builder builder = new AlertDialog.Builder(AddContact.this);
         builder.setTitle("Ajouter une photo");
         builder.setItems(items, new DialogInterface.OnClickListener()
@@ -220,7 +220,7 @@ public class AddContact extends AppCompatActivity implements Serializable
             Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
             imageURI =  saveImage(thumbnail);
             Log.d("STATE", "IMAGE URI : " + imageURI);
-            Toast.makeText(AddContact.this, "Image Saved!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(AddContact.this, "Image Sauvegardée !", Toast.LENGTH_SHORT).show();
         }
     }
 
