@@ -30,7 +30,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:onClick="onSubmit"
-        android:text="AjoutÃ©"
+        android:text="Ajouté"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
@@ -99,7 +99,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="TÃ©lÃ©phone"
+        android:hint="Téléphone"
         android:inputType="phone"
         android:layout_marginRight="8dp"
         app:layout_constraintRight_toRightOf="parent"

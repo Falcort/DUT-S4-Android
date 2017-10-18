@@ -13,7 +13,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="32dp"
-        android:text="Envoie de SMS"
+        android:text="Envoi de SMS"
         android:textAllCaps="true"
         android:textColor="@android:color/background_dark"
         android:textSize="24sp"
@@ -29,7 +29,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:onClick="onSend"
-        android:text="Envoie"
+        android:text="Envoi"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
