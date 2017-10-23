@@ -4,6 +4,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Xml;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -14,14 +16,16 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity implements AsyncResponse
 {
     URL url;
     ArrayList<Seisme> listSeismes = new ArrayList<>();
-    TextView tv;
     AsyncTackGetSeismes asyncTask =new AsyncTackGetSeismes();
+    ArrayList<HashMap<String, String>> ArrayMap = new ArrayList<>();
+    HashMap<String, String> hashMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -30,9 +34,8 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse
         setContentView(R.layout.activity_main);
         try
         {
-            tv = (TextView) findViewById(R.id.tv);
             asyncTask.delegate = this;
-            asyncTask.execute("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.atom", tv).get();
+            asyncTask.execute("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.atom").get();
         }
         catch (Exception ex)
         {
@@ -168,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse
             ex.getStackTrace();
         }
 
-        lireSeismes();
+        updateListView();
     }
 
     private void lireSeismes()
@@ -176,6 +179,30 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse
         for (Seisme seisme : listSeismes)
         {
             Log.d("STATE", seisme.getTitle());
+        }
+    }
+
+    private void updateListView()
+    {
+        for(Seisme seisme : listSeismes)
+        {
+            hashMap = new HashMap<>();
+            hashMap.put("id", seisme.getId());
+            hashMap.put("title", seisme.getTitle());
+            hashMap.put("update", seisme.getUpdate());
+            hashMap.put("link", seisme.getLink());
+            hashMap.put("summary", seisme.getSumary());
+            hashMap.put("point", seisme.getPoint());
+            hashMap.put("elev", seisme.getElev());
+            hashMap.put("age", seisme.getAge());
+            hashMap.put("magnitude", seisme.getMagnitude());
+            hashMap.put("contributor", seisme.getContributor());
+            hashMap.put("author", seisme.getAuthor());
+            ArrayMap.add(hashMap);
+
+            ListView listview = (ListView) findViewById(R.id.listview);
+            SimpleAdapter adapter = new SimpleAdapter(this.getBaseContext(), ArrayMap, R.layout.listview_layout, new String[] {"title", "update"}, new int[] {R.id.title, R.id.updated});
+            listview.setAdapter(adapter);
         }
     }
 }

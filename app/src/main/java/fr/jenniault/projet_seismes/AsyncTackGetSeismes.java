@@ -17,7 +17,6 @@ import java.net.URL;
 public class AsyncTackGetSeismes extends AsyncTask<Object, Void, String>
 {
     public AsyncResponse delegate = null;
-    TextView tv;
     String xml;
 
     @Override
@@ -35,7 +34,6 @@ public class AsyncTackGetSeismes extends AsyncTask<Object, Void, String>
         try
         {
             URL url = new URL(urlString);
-            tv = (TextView) objects[1];
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK)
             {
