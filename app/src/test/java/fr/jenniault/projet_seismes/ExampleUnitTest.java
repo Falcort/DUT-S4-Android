@@ -1,4 +1,4 @@
-package com.example.thibault.projetiutandroid;
+package fr.jenniault.projet_seismes;
 
 import org.junit.Test;
 

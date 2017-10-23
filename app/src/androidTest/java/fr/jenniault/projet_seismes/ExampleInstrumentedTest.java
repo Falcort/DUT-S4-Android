@@ -1,4 +1,4 @@
-package com.example.thibault.projetiutandroid;
+package fr.jenniault.projet_seismes;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.example.thibault.projetiutandroid", appContext.getPackageName());
+        assertEquals("fr.jenniault.projet_seismes", appContext.getPackageName());
     }
 }
