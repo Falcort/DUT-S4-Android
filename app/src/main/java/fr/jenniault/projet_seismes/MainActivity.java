@@ -1,10 +1,14 @@
 package fr.jenniault.projet_seismes;
 
+import android.content.Context;
+import android.content.Intent;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Xml;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
@@ -56,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse
     @Override
     public void processFinish(String output)
     {
-        Log.d("STATE", "PROCESS FINISH");
         try
         {
             parseXML(output);
@@ -75,13 +78,13 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse
         final String UPDATED = "updated";
         final String LINK = "link";
         final String SUMMARY = "summary";
-        final String POINT = "georss:point";
-        final String ELEV = "georss:elev";
-        final String AGE = "age";
-        final String MAGNITUDE = "magnitude";
-        final String CONTRIBUTOR = "contributor";
-        final String AUTHOR = "author";
+        final String POINT = "point";
+        final String ELEV = "elev";
         final String FEED = "feed";
+        final String CATEGORY = "category";
+        final String GEORSS = "georss";
+
+        String label;
 
         XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
         factory.setNamespaceAware(true);
@@ -126,37 +129,41 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse
                             }
                             else if (name.equalsIgnoreCase(LINK))
                             {
-                                seisme.setLink(parser.nextText());
+                                seisme.setLink(parser.getAttributeValue(2));
                             }
                             else if (name.equalsIgnoreCase(SUMMARY))
                             {
                                 seisme.setSumary(parser.nextText());
                             }
-                            else if(name.equalsIgnoreCase(POINT))
+                            else if (name.contains(POINT) /*&& name.contains(GEORSS)*/)
                             {
                                 seisme.setPoint(parser.nextText());
+                                Log.d("STATE", seisme.getPoint());
                             }
-                            else if(name.equalsIgnoreCase(ELEV))
+                            else if (name.contains(ELEV) /*&& name.contains(GEORSS)*/)
                             {
                                 seisme.setElev(parser.nextText());
                             }
-                            else if(name.equalsIgnoreCase(AGE))
+                            else if (name.equalsIgnoreCase(CATEGORY))
                             {
-                                seisme.setAge(parser.nextText());
+                                label = parser.getAttributeValue(0);
+                                if (label.equals("Magnitude"))
+                                {
+                                    seisme.setMagnitude(seisme.getTitle().substring(2, 5));
+                                }
+                                else if (label.equals("Age"))
+                                {
+                                    seisme.setAge(parser.getAttributeValue(1));
+                                }
+                                else if (label.equals("Contributor"))
+                                {
+                                    seisme.setContributor(parser.getAttributeValue(1));
+                                }
+                                else if (label.equals("Author"))
+                                {
+                                    seisme.setAuthor(parser.getAttributeValue(1));
+                                }
                             }
-                            else if(name.equalsIgnoreCase(MAGNITUDE))
-                            {
-                                seisme.setMagnitude(parser.nextText());
-                            }
-                            else if(name.equalsIgnoreCase(CONTRIBUTOR))
-                            {
-                                seisme.setContributor(parser.nextText());
-                            }
-                            else if(name.equalsIgnoreCase(AUTHOR))
-                            {
-                                seisme.setAuthor(parser.nextText());
-                            }
-                            listSeismes.add(seisme);
                         }
                         break;
                     }
@@ -194,6 +201,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse
 
     private void updateListView()
     {
+        String magnitude;
         for(Seisme seisme : listSeismes)
         {
             hashMap = new HashMap<>();
@@ -208,11 +216,38 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse
             hashMap.put("magnitude", seisme.getMagnitude());
             hashMap.put("contributor", seisme.getContributor());
             hashMap.put("author", seisme.getAuthor());
+            if(Double.parseDouble(seisme.getMagnitude()) < 5)
+            {
+                hashMap.put("color", String.valueOf(R.mipmap.ic_green));
+            }
+            else if(Double.parseDouble(seisme.getMagnitude()) >= 5 && Double.parseDouble(seisme.getMagnitude()) <= 6.9)
+            {
+                hashMap.put("color", String.valueOf(R.mipmap.ic_orange));
+            }
+            else
+            {
+                hashMap.put("color", String.valueOf(R.mipmap.ic_red));
+            }
             ArrayMap.add(hashMap);
 
-            SimpleAdapter adapter = new SimpleAdapter(this.getBaseContext(), ArrayMap, R.layout.listview_layout, new String[] {"title", "update"}, new int[] {R.id.title, R.id.updated});
-            listview.setAdapter(adapter);
         }
+        SimpleAdapter adapter = new SimpleAdapter(this.getBaseContext(), ArrayMap, R.layout.listview_layout, new String[] {"title", "update", "color"}, new int[] {R.id.title, R.id.updated, R.id.img});
+        listview.setAdapter(adapter);
+        listview.setClickable(true);
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
+            {
+                Context context = getApplicationContext();
+                Intent intent = new Intent(MainActivity.this, MapsActivity.class);
+                intent.putExtra("coord", listSeismes.get(i).getPoint());
+                intent.putExtra("title", listSeismes.get(i).getTitle());
+                Log.d("STATE", "POINT " + listSeismes.get(i).getPoint());
+                Log.d("STATE", "TITLE " + listSeismes.get(i).getTitle());
+                startActivity(intent);
+            }
+        });
 
         listview.setVisibility(View.VISIBLE);
         spinner.setVisibility(View.INVISIBLE);
@@ -232,5 +267,10 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse
         {
             ex.printStackTrace();
         }
+    }
+
+    public void openMap(View view)
+    {
+
     }
 }

@@ -14,7 +14,11 @@ public class Seisme
     private String contributor;
     private String author;
 
-    public Seisme(String id, String title, String update, String link, String  sumary, String point, String elev, String age, String magnitude, String contributor, String author)
+    public Seisme()
+    {
+    }
+
+    public Seisme(String id, String title, String update, String link, String sumary, String point, String elev, String age, String magnitude, String contributor, String author)
     {
         this.id = id;
         this.title = title;
@@ -27,11 +31,6 @@ public class Seisme
         this.magnitude = magnitude;
         this.contributor = contributor;
         this.author = author;
-    }
-
-    public Seisme()
-    {
-
     }
 
     public String getId()

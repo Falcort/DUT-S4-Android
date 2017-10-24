@@ -6,26 +6,29 @@
     android:layout_height="match_parent"
     android:padding="10dp" >
 
+    <ImageView
+        android:id="@+id/img"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        tools:background="#AAA" />
+
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@android:color/black"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/img"
+        android:layout_alignTop="@+id/img"
         android:textStyle="bold"
-        tools:text="title"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        tools:text="Pseudo" />
 
-    <TextView
-        android:id="@+id/updated"
+    <TextView android:id="@+id/updated"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
         android:layout_alignLeft="@+id/title"
         android:layout_below="@+id/title"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:textColor="@android:color/black"
-        tools:text="date " />
+        tools:text="Texte de mon tweet" />
 
 </RelativeLayout>
