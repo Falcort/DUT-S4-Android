@@ -28,7 +28,6 @@ public class AsyncTackGetSeismes extends AsyncTask<Object, Void, String>
     @Override
     protected String doInBackground(Object... objects)
     {
-        Log.d("STATE", "DEBUT DOINBACK");
         xml = "";
         String urlString = (String) objects[0];
         String line;

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -13,15 +14,18 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+import java.util.ArrayList;
+
+public class MapsActivityAll extends FragmentActivity implements OnMapReadyCallback
+{
 
     private GoogleMap mMap;
-    Seisme seisme;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
+        setContentView(R.layout.activity_maps_all);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -41,15 +45,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap)
     {
-
-
         mMap = googleMap;
+
         Intent intent = getIntent();
-        seisme = (Seisme) intent.getSerializableExtra("seisme");
-        String[] split = seisme.getPoint().split(" ");
-        LatLng point = new LatLng(Double.parseDouble(split[0]), Double.parseDouble(split[1]));
-        mMap.addMarker(new MarkerOptions().position(point).title(seisme.getTitle()));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(point));
+        final ArrayList<Seisme> listSeismes = (ArrayList<Seisme>) intent.getSerializableExtra("map");
+        String[] split;
+        for(Seisme seisme : listSeismes)
+        {
+            split = seisme.getPoint().split(" ");
+            mMap.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(split[0]), Double.parseDouble(split[1]))).title(seisme.getTitle()));
+        }
 
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener()
         {
@@ -57,8 +62,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onInfoWindowClick(Marker marker)
             {
                 Context context = getApplicationContext();
-                Intent intent = new Intent(MapsActivity.this, infoDetail.class);
-                intent.putExtra("item", seisme);
+                String title =  marker.getTitle();
+                int index = 0;
+                for(Seisme seisme : listSeismes)
+                {
+                    if(seisme.getTitle().equals(title))
+                    {
+                        break;
+                    }
+                    index++;
+                }
+
+                Intent intent = new Intent(MapsActivityAll.this, infoDetail.class);
+                intent.putExtra("item", listSeismes.get(index));
                 startActivity(intent);
             }
         });

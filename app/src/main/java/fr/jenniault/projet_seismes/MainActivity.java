@@ -135,12 +135,11 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse
                             {
                                 seisme.setSumary(parser.nextText());
                             }
-                            else if (name.contains(POINT) /*&& name.contains(GEORSS)*/)
+                            else if (name.contains(POINT))
                             {
                                 seisme.setPoint(parser.nextText());
-                                Log.d("STATE", seisme.getPoint());
                             }
-                            else if (name.contains(ELEV) /*&& name.contains(GEORSS)*/)
+                            else if (name.contains(ELEV))
                             {
                                 seisme.setElev(parser.nextText());
                             }
@@ -241,10 +240,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse
             {
                 Context context = getApplicationContext();
                 Intent intent = new Intent(MainActivity.this, MapsActivity.class);
-                intent.putExtra("coord", listSeismes.get(i).getPoint());
-                intent.putExtra("title", listSeismes.get(i).getTitle());
-                Log.d("STATE", "POINT " + listSeismes.get(i).getPoint());
-                Log.d("STATE", "TITLE " + listSeismes.get(i).getTitle());
+                intent.putExtra("seisme", listSeismes.get(i));
                 startActivity(intent);
             }
         });
@@ -271,6 +267,8 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse
 
     public void openMap(View view)
     {
-
+        Intent intent = new Intent(MainActivity.this, MapsActivityAll.class);
+        intent.putExtra("map", listSeismes);
+        startActivity(intent);
     }
 }

@@ -1,6 +1,8 @@
 package fr.jenniault.projet_seismes;
 
-public class Seisme
+import java.io.Serializable;
+
+public class Seisme implements Serializable
 {
     private String id;
     private String title;
