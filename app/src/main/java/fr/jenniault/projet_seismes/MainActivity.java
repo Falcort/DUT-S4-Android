@@ -2,6 +2,8 @@ package fr.jenniault.projet_seismes;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -43,9 +46,17 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse
         setContentView(R.layout.activity_main);
         try
         {
-            asyncTask = new AsyncTackGetSeismes();
-            asyncTask.delegate = this;
-            asyncTask.execute("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.atom").get();
+            if(isOnline())
+            {
+                asyncTask = new AsyncTackGetSeismes();
+                asyncTask.delegate = this;
+                asyncTask.execute("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.atom").get();
+            }
+            else
+            {
+                Toast toast = Toast.makeText(getBaseContext(), "Pas de co", Toast.LENGTH_SHORT);
+                toast.show();
+            }
         }
         catch (Exception ex)
         {
@@ -251,17 +262,25 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse
 
     public void refresh(View view)
     {
-        asyncTask = new AsyncTackGetSeismes();
-        listview.setVisibility(View.INVISIBLE);
-        spinner.setVisibility(View.VISIBLE);
-        try
+        if(isOnline())
         {
-            asyncTask.delegate = this;
-            asyncTask.execute("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.atom").get();
+            asyncTask = new AsyncTackGetSeismes();
+            listview.setVisibility(View.INVISIBLE);
+            spinner.setVisibility(View.VISIBLE);
+            try
+            {
+                asyncTask.delegate = this;
+                asyncTask.execute("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.atom").get();
+            }
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
         }
-        catch (Exception ex)
+        else
         {
-            ex.printStackTrace();
+            Toast toast = Toast.makeText(getBaseContext(), "Pas de co", Toast.LENGTH_SHORT);
+            toast.show();
         }
     }
 
@@ -270,5 +289,12 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse
         Intent intent = new Intent(MainActivity.this, MapsActivityAll.class);
         intent.putExtra("map", listSeismes);
         startActivity(intent);
+    }
+
+    public boolean isOnline()
+    {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 }
