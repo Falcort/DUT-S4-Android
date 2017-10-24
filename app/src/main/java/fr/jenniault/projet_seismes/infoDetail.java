@@ -27,6 +27,7 @@ public class infoDetail extends AppCompatActivity
         TextView magnitude = (TextView) findViewById(R.id.magnitude);
         TextView contributor = (TextView) findViewById(R.id.contributor);
         TextView author = (TextView) findViewById(R.id.author);
+        TextView id = (TextView) findViewById(R.id.id);
 
         Intent intent = getIntent();
         Seisme seisme = (Seisme) intent.getSerializableExtra("item");
@@ -41,6 +42,7 @@ public class infoDetail extends AppCompatActivity
         magnitude.setText(seisme.getMagnitude());
         contributor.setText(seisme.getContributor());
         author.setText(seisme.getAuthor());
+        id.setText(seisme.getId());
 
         link.setMovementMethod(LinkMovementMethod.getInstance());
     }
