@@ -4,8 +4,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Xml;
+import android.view.View;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -23,9 +26,11 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse
 {
     URL url;
     ArrayList<Seisme> listSeismes = new ArrayList<>();
-    AsyncTackGetSeismes asyncTask =new AsyncTackGetSeismes();
+    AsyncTackGetSeismes asyncTask;
     ArrayList<HashMap<String, String>> ArrayMap = new ArrayList<>();
     HashMap<String, String> hashMap;
+    ListView listview;
+    ProgressBar spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -34,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse
         setContentView(R.layout.activity_main);
         try
         {
+            asyncTask = new AsyncTackGetSeismes();
             asyncTask.delegate = this;
             asyncTask.execute("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.atom").get();
         }
@@ -41,11 +47,16 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse
         {
             ex.printStackTrace();
         }
+        listview = (ListView) findViewById(R.id.listview);
+        spinner = (ProgressBar) findViewById(R.id.spinner);
+        listview.setVisibility(View.INVISIBLE);
+        spinner.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void processFinish(String output)
     {
+        Log.d("STATE", "PROCESS FINISH");
         try
         {
             parseXML(output);
@@ -170,7 +181,6 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse
         {
             ex.getStackTrace();
         }
-
         updateListView();
     }
 
@@ -200,9 +210,27 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse
             hashMap.put("author", seisme.getAuthor());
             ArrayMap.add(hashMap);
 
-            ListView listview = (ListView) findViewById(R.id.listview);
             SimpleAdapter adapter = new SimpleAdapter(this.getBaseContext(), ArrayMap, R.layout.listview_layout, new String[] {"title", "update"}, new int[] {R.id.title, R.id.updated});
             listview.setAdapter(adapter);
+        }
+
+        listview.setVisibility(View.VISIBLE);
+        spinner.setVisibility(View.INVISIBLE);
+    }
+
+    public void refresh(View view)
+    {
+        asyncTask = new AsyncTackGetSeismes();
+        listview.setVisibility(View.INVISIBLE);
+        spinner.setVisibility(View.VISIBLE);
+        try
+        {
+            asyncTask.delegate = this;
+            asyncTask.execute("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.atom").get();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
         }
     }
 }
