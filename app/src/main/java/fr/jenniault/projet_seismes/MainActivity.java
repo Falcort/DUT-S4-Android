@@ -4,40 +4,36 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.util.Xml;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
-
-import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity implements AsyncResponse
 {
     URL url;
     ArrayList<Seisme> listSeismes = new ArrayList<>();
+    ArrayList<Seisme> bufferSeisme = new ArrayList<>();
     AsyncTackGetSeismes asyncTask;
     ArrayList<HashMap<String, String>> ArrayMap = new ArrayList<>();
+    ArrayList<HashMap<String, String>> bufferMap = new ArrayList<>();
     HashMap<String, String> hashMap;
     ListView listview;
     ProgressBar spinner;
+    SimpleAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -203,7 +199,6 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse
 
     private void updateListView()
     {
-        String magnitude;
         for(Seisme seisme : listSeismes)
         {
             hashMap = new HashMap<>();
@@ -231,9 +226,10 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse
                 hashMap.put("color", String.valueOf(R.mipmap.ic_red));
             }
             ArrayMap.add(hashMap);
-
         }
-        SimpleAdapter adapter = new SimpleAdapter(this.getBaseContext(), ArrayMap, R.layout.listview_layout, new String[] {"title", "update", "color"}, new int[] {R.id.title, R.id.updated, R.id.img});
+
+        bufferMap = ArrayMap;
+        adapter = new SimpleAdapter(this.getBaseContext(), bufferMap, R.layout.listview_layout, new String[] {"title", "update", "color"}, new int[] {R.id.title, R.id.updated, R.id.img});
         listview.setAdapter(adapter);
         listview.setClickable(true);
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener()
@@ -288,5 +284,51 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
+    public void sortUp(View view)
+    {
+        bufferSeisme = new ArrayList<>();
+        bufferSeisme = listSeismes;
+        Collections.sort(bufferSeisme, new Comparator<Seisme>()
+        {
+            @Override
+            public int compare(Seisme seisme1, Seisme seisme2)
+            {
+                return seisme1.getMagnitude().compareTo(seisme2.getMagnitude());
+            }
+        });
+
+        bufferMap = new ArrayList<>();
+        for(Seisme seisme : bufferSeisme)
+        {
+            hashMap = new HashMap<>();
+            hashMap.put("id", seisme.getId());
+            hashMap.put("title", seisme.getTitle());
+            hashMap.put("update", seisme.getUpdate());
+            hashMap.put("link", seisme.getLink());
+            hashMap.put("summary", seisme.getSumary());
+            hashMap.put("point", seisme.getPoint());
+            hashMap.put("elev", seisme.getElev());
+            hashMap.put("age", seisme.getAge());
+            hashMap.put("magnitude", seisme.getMagnitude());
+            hashMap.put("contributor", seisme.getContributor());
+            hashMap.put("author", seisme.getAuthor());
+            if (Double.parseDouble(seisme.getMagnitude()) < 5)
+            {
+                hashMap.put("color", String.valueOf(R.mipmap.ic_green));
+            }
+            else if (Double.parseDouble(seisme.getMagnitude()) >= 5 && Double.parseDouble(seisme.getMagnitude()) <= 6.9)
+            {
+                hashMap.put("color", String.valueOf(R.mipmap.ic_orange));
+            }
+            else
+            {
+                hashMap.put("color", String.valueOf(R.mipmap.ic_red));
+            }
+            bufferMap.add(hashMap);
+        }
+        adapter = new SimpleAdapter(this.getBaseContext(), bufferMap, R.layout.listview_layout, new String[] {"title", "update", "color"}, new int[] {R.id.title, R.id.updated, R.id.img});
+        listview.setAdapter(adapter);
     }
 }
