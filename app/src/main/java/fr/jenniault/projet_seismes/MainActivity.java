@@ -201,14 +201,6 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse
         updateListView();
     }
 
-    private void lireSeismes()
-    {
-        for (Seisme seisme : listSeismes)
-        {
-            Log.d("STATE", seisme.getTitle());
-        }
-    }
-
     private void updateListView()
     {
         String magnitude;
